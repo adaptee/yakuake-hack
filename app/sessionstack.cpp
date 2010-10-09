@@ -22,10 +22,12 @@
 
 #include "sessionstack.h"
 #include "settings.h"
+#include "terminal.h"
 #include "visualeventoverlay.h"
 
 #include <KMessageBox>
 #include <KLocalizedString>
+#include <KUser>
 
 #include <QtDBus/QtDBus>
 
@@ -46,8 +48,17 @@ SessionStack::~SessionStack()
 
 int SessionStack::addSession(Session::SessionType type)
 {
-    Session* session = new Session(type, this);
-    connect(session, SIGNAL(titleChanged(int,QString)), this, SIGNAL(titleChanged(int,QString)));
+    Session*  currentSession  = m_sessions.value(m_activeSessionId);
+    Terminal* currentTerminal = currentSession ? currentSession->getTerminal(currentSession->activeTerminalId()) : NULL;
+    bool ok = false;
+    QString workingDir(currentTerminal ? currentTerminal->currentDir(&ok) : QString::null);
+
+    if (!ok) {
+        workingDir = KUser().homeDir();
+    }
+
+    Session* session = new Session(workingDir, type, this);
+    connect(session, SIGNAL(titleChanged(int, const QString&)), this, SIGNAL(titleChanged(int, const QString&)));
     connect(session, SIGNAL(terminalManuallyActivated(Terminal*)), this, SLOT(handleManualTerminalActivation(Terminal*)));
     connect(session, SIGNAL(keyboardInputBlocked(Terminal*)), m_visualEventOverlay, SLOT(indicateKeyboardInputBlocked(Terminal*)));
     connect(session, SIGNAL(activityDetected(Terminal*)), parentWidget(), SLOT(handleTerminalActivity(Terminal*)));

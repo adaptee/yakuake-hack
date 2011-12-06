@@ -71,9 +71,9 @@ int SessionStack::addSession(Session::SessionType type)
     m_sessions.insert(session->id(), session);
 
     if (Settings::dynamicTabTitles())
-        emit sessionAdded(session->id(), session->title());
+        emit sessionAdded(session->id(), (currentSession? currentSession->id() : -1), session->title());
     else
-        emit sessionAdded(session->id());
+        emit sessionAdded(session->id(), (currentSession? currentSession->id() : -1) );
 
     return session->id();
 }

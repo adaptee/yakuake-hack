@@ -93,8 +93,8 @@ MainWindow::MainWindow(QWidget* parent)
     connect(m_tabBar, SIGNAL(requestRemoveTerminalHighlight()), m_sessionStack, SIGNAL(removeTerminalHighlight()));
     connect(m_tabBar, SIGNAL(tabContextMenuClosed()), m_sessionStack, SIGNAL(removeTerminalHighlight()));
 
-    connect(m_sessionStack, SIGNAL(sessionAdded(int,QString)),
-        m_tabBar, SLOT(addTab(int,QString)));
+    connect(m_sessionStack, SIGNAL(sessionAdded(int, int, const QString&)),
+        m_tabBar, SLOT(addTab(int, int, const QString&)));
     connect(m_sessionStack, SIGNAL(sessionRaised(int)), m_tabBar, SLOT(selectTab(int)));
     connect(m_sessionStack, SIGNAL(sessionRemoved(int)), m_tabBar, SLOT(removeTab(int)));
     connect(m_sessionStack, SIGNAL(activeTitleChanged(QString)),

@@ -728,9 +728,16 @@ void TabBar::leaveEvent(QEvent* event)
     QWidget::leaveEvent(event);
 }
 
-void TabBar::addTab(int sessionId, const QString& title)
+void TabBar::addTab(int sessionId, int prevSessionId, const QString& title)
 {
-    m_tabs.append(sessionId);
+    // hack by adaptee@gmail.com
+    // put new tab right after current tab, but not at the end of the list  
+    // I personally find this more convenient.
+    int index = m_tabs.indexOf(prevSessionId);
+    if ( index == -1 )
+        m_tabs.append(sessionId);
+    else
+        m_tabs.insert(index + 1, sessionId);
 
     if (title.isEmpty())
         m_tabTitles.insert(sessionId, standardTabTitle());
